@@ -10,6 +10,7 @@ typedef struct {
 } User;
 
 User currentUser;
+int isLoggedIn = 0;
 
 void registerUser() {
     printf("Enter your name: ");
@@ -32,32 +33,47 @@ void login() {
 
     if (strcmp(email, currentUser.email) == 0 && strcmp(password, currentUser.password) == 0) {
         printf("Login Successful!\n");
+        isLoggedIn = 1; 
     } else {
         printf("Invalid email or password!\n");
     }
 }
 
 void showBalance() {
-    printf("Your balance is: %.2f\n", currentUser.balance);
+    if(isLoggedIn) { 
+        printf("Your balance is: %.2f\n", currentUser.balance);
+    } else {
+        printf("You need to log in first.\n");
+    }
 }
 
 void deposit() {
     float amount;
-    printf("Enter amount to deposit: ");
-    scanf("%f", &amount);
-    currentUser.balance += amount;
-    printf("Deposit Successful!\n");
+    
+    if(isLoggedIn) { 
+        printf("Enter amount to deposit: ");
+        scanf("%f", &amount);
+        currentUser.balance += amount;
+        printf("Deposit Successful!\n");
+    } else {
+        printf("You need to log in first.\n");
+    }
 }
 
 void withdraw() {
     float amount;
-    printf("Enter amount to withdraw: ");
-    scanf("%f", &amount);
-    if (amount <= currentUser.balance) {
-        currentUser.balance -= amount;
-        printf("Withdrawal Successful!\n");
+    
+    if(isLoggedIn) {
+        printf("Enter amount to withdraw: ");
+        scanf("%f", &amount);
+        if (amount <= currentUser.balance) {
+            currentUser.balance -= amount;
+            printf("Withdrawal Successful!\n");
+        } else {
+            printf("Insufficient balance!\n");
+        }
     } else {
-        printf("Insufficient balance!\n");
+        printf("You need to log in first.\n");
     }
 }
 
@@ -65,7 +81,15 @@ int main() {
     int choice;
 
     while(1) {
-        printf("\n1. Register\n2. Login\n3. Show Balance\n4. Deposit\n5. Withdraw\n6. Exit\nEnter your choice: ");
+        printf("\n1. Register\n2. Login\n");
+        
+        if(isLoggedIn) {
+            printf("3. Show Balance\n4. Deposit\n5. Withdraw\n6. Exit\n");
+        } else {
+            printf("3. Exit\n");
+        }
+        
+        printf("Enter your choice: ");
         scanf("%d", &choice);
 
         switch(choice) {
@@ -76,7 +100,11 @@ int main() {
                 login();
                 break;
             case 3:
-                showBalance();
+                if(isLoggedIn) {
+                    showBalance();
+                } else {
+                    exit(0);
+                }
                 break;
             case 4:
                 deposit();
